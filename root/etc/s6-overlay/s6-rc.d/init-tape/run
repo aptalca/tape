@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+
+# create folders
+mkdir -p \
+    /config/{logs,crontabs}
+
+if [ ! -f "/config/tape.sh" ]; then
+    echo "copying default tape script"
+    cp /defaults/tape.sh /config/
+else
+    echo "using existing tape script"
+fi
+
+# copy default crontabs
+[[ ! -f /config/crontabs/root ]] && \
+    cp /etc/crontabs/root /config/crontabs/
+
+# import user crontabs
+rm /etc/crontabs/*
+cp /config/crontabs/* /etc/crontabs/
+
+# permissions
+chown -R abc:abc \
+    /config

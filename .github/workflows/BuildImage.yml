@@ -1,0 +1,41 @@
+name: Build Image
+
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  ENDPOINT: "aptalca/tape"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - name: Build image
+        run: |
+          docker build --no-cache -t ${{ github.sha }} .
+      - name: Tag image
+        if: ${{ github.ref == format('refs/heads/main') }}
+        run: |
+          docker tag ${{ github.sha }} ghcr.io/${ENDPOINT}:${{ github.sha }}
+          docker tag ${{ github.sha }} ghcr.io/${ENDPOINT}:latest
+          docker tag ${{ github.sha }} ${ENDPOINT}:${{ github.sha }}
+          docker tag ${{ github.sha }} ${ENDPOINT}:latest
+      - name: Login to GitHub Container Registry
+        if: ${{ github.ref == format('refs/heads/main') }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u aptalca --password-stdin
+      - name: Push tags to GitHub Container Registry
+        if: ${{ github.ref == format('refs/heads/main') }}
+        run: |
+          docker push ghcr.io/${ENDPOINT}:${{ github.sha }}
+          docker push ghcr.io/${ENDPOINT}:latest
+      - name: Login to DockerHub
+        if: ${{ github.ref == format('refs/heads/main') }}
+        run: |
+          echo ${{ secrets.DOCKERPASS }} | docker login -u aptalca --password-stdin
+      - name: Push tags to DockerHub
+        if: ${{ github.ref == format('refs/heads/main') }}
+        run: |
+          docker push ${ENDPOINT}:${{ github.sha }}
+          docker push ${ENDPOINT}:latest
