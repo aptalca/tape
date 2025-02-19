@@ -17,7 +17,7 @@ Basic facts about tapes and how they are operated with `mt` and `tar`:
 - Tape drives are for sequential reading and writing. Each tar file is written and appended with an `EOF` marker that defines the end of the file.
 - Tape drives can easily and relatively quickly identify the EOF files to determine the beginning and end of each file.
 - Writing and reading operations always begin on where the drive head currently is. Pay close attention to that prior to each operation.
-- `/dev/st0` is rewinding device. After each operation, the tape is rewound to the beginning. `/dev/nst0` is non-rewinding and the head remains at its location at the end of each operation.
+- `/dev/st0` is a rewinding device. After each operation, the tape is rewound to the beginning. `/dev/nst0` is non-rewinding and the head remains at its location at the end of each operation.
 - `mt -f /dev/nst0 status` will show the status of the drive head. If it's at a file (vs a block), it will list the `File number`. If it's at the beginning of a file, it will list `EOF` at the bottom (except for the first file, which is really called `File number=0`, which will show `BOT` indicating the `beginning of tape`).
 - You can seek to the beginning via `mt -f /dev/nst0 rewind` or `mt -f /dev/nst0 asf 0`
 - You can seek to the beginning of any file via `mt -f /dev/nst0 asf X`with `X` being the file number (starting from `0`)
@@ -28,7 +28,7 @@ Basic facts about tapes and how they are operated with `mt` and `tar`:
 - With tar, you can write directly to the tape via `tar -cvf /dev/nst0 sourcedirectory1 sourcedirectory2`.
 - If you used the non-rewinding `nst0` device, the drive head should be at the beginning of the second file, indicated by `File number=1` and `EOF` in `status` output.
 - To write the second file, make sure the `status` shows `File number=1` and `EOF`.
-- Same command, `tar -cvf /dev/nst0 sourcedirectory1 sourcedirectory2`, will now write the second tar file and the head should move to `File number=1`.
+- Same command, `tar -cvf /dev/nst0 sourcedirectory1 sourcedirectory2`, will now write the second tar file and the head should move to `File number=2`.
 - If you overwrite the first file, all subsequent files will be lost. Pay attention to where the head is before each write operation. You can use `mt` to forward to the end of the tape to be sure.
 
 ### Reading from tape:
