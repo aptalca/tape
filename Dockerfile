@@ -7,6 +7,7 @@ RUN \
   apk add --no-cache --upgrade \
     logrotate \
     mt-st \
+    screen \
     tar && \
   echo "**** fix logrotate ****" && \
   sed -i "s#/var/log/messages {}.*# #g" /etc/logrotate.conf && \

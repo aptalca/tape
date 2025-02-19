@@ -30,6 +30,7 @@ Basic facts about tapes and how they are operated with `mt` and `tar`:
 - To write the second file, make sure the `status` shows `File number=1` and `EOF`.
 - Same command, `tar -cvf /dev/nst0 sourcedirectory1 sourcedirectory2`, will now write the second tar file and the head should move to `File number=2`.
 - If you overwrite the first file, all subsequent files will be lost. Pay attention to where the head is before each write operation. You can use `mt` to forward to the end of the tape to be sure.
+- For long operations run manually via cli, you can use `screen` so you don't have to keep a shell open.
 
 ### Reading from tape:
 
@@ -37,6 +38,7 @@ Basic facts about tapes and how they are operated with `mt` and `tar`:
 - To copy the first file from tape to the current folder on the local machine, rewind via `mt -f /dev/nst0 rewind` (or via `mt -f /dev/nst0 asf 0`).
 - Use the tar command to extract from tape: `tar -xvf /dev/nst0`. It will read the first file all the way to the EOF, and extract it to the local disk.
 - To copy the second file from tape, seek to it via `mt -f /dev/nst0 asf 1` and extract via `tar -xvf /dev/nst0`.
+- For long operations run manually via cli, you can use `screen` so you don't have to keep a shell open.
 
 There are plenty more `mt` commands and arguments listed on its manpage: https://linux.die.net/man/1/mt
 
