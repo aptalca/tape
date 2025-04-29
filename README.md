@@ -45,3 +45,17 @@ There are plenty more `mt` commands and arguments listed on its manpage: https:/
 ## Important Notice:
 
 Never do `mt -f /dev/nst0 erase` unless you know it's really what you want. The manpage is not clear about it, but it actually does a `secure erase`, it takes a really long time (8+ hrs) and you can't cancel it once started. Killing or force killing the process doesn't work, `docker stop` and `docker kill` fail. The only way is to cut the power to the drive, which could damage the drive head.
+
+## My Personal Backup Strategy
+
+I realize larger organizations often rely on tape libraries with autoloaders and proprietary software solutions to manage their backups. Unfortunately I do not have those luxuries in my humble homelab.
+
+I wanted a simple (KISS) solution for backing up different source folders to different tapes, in an incremental manner without user input (other than switching tapes). My time is limited and precious. I also wanted it to be foolproof so that I couldn't mess it up if I wanted to. I'm often doing homelab projects in a rush so my manual tasks are prone to typos and errors.
+
+So I came up with a sample script included in this repo: https://github.com/aptalca/tape/blob/main/root/defaults/tape.sh
+
+It basically does incremental backups to tape. However, the source directories (along with some optional custom tar arguments) as well as the last tar snapshot file are saved on tape so that whenever you switch the tape out, the script automatically retrieves these from the tape itself to figure it all out.
+
+All you do is stick a pre-initialized tape into the drive, and run the script (manually or via cron).
+
+You can have one tape that backs up your computer backup folders. Another tape that backs up your family photos. Or perhaps a second tape for your family photos for good measure, but with different increments. It's easy. Just stick a tape into the drive and run the script. It will automatically figure out the source folders, custom tar arguments and the last snapshot state; and it will write a new incremental tar to tape. 

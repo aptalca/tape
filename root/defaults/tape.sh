@@ -16,7 +16,7 @@ echo $(date)
 
 # How it works:
 # Tapes will contain pairs of tarballs for each incremental backup. The first file of the pair (even
-# numbered ones starting from 0)is the incremental tarball of the source directories. The second of the
+# numbered ones starting from 0) is the incremental tarball of the source directories. The second of the
 # pair contains the last tar snapshot as well as a list of source directories. The second tarball contains
 # the state info necessary to generate the next incremental backup.
 
