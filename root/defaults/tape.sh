@@ -28,17 +28,19 @@ echo $(date)
 #    line and no trailing newline:
 #    `printf -- '-C /mnt/backups backup1 backup2' > directories.txt`
 # 5. Write the initial backup to tape (this will destroy all info on the tape):
-#    `tar -cvf /dev/nst0 --listed-incremental="tapeA1.snar" $(cat directories.txt)`
+#    `tar -cvf /dev/nst0 --listed-incremental=tapeA1.snar $(cat directories.txt)`
 #    Make sure the snapshot filename is in the format of `tapeXX.snar` where X can be any letter or number.
-# 6. Write the index files to tape:
+# 6. Fix the new file perms (just in case):
+#    `chown abc:abc directories.txt tapeA1.snar`
+# 7. Write the index files to tape:
 #    `tar -cvf /dev/nst0 tapeA1.snar directories.txt`
-# 7. Delete the local index files via `rm tapeA1.snar directories.txt`
+# 8. Delete the local index files via `rm tapeA1.snar directories.txt`
 #    Now you should have a tape initialized with `file 0` containing the tarball of your source directories
 #    and `file 1` containing the tar snapshot and the directories.txt file. When the following script is
 #    run, it will first retrieve these index files, use them to generate a new incremental tar and write
 #    the pair to tape. 
 
-
+# ***** Start of Script
 # check for active tape by seeking to end of data and checking the files at the last file
 cd /config
 if [ -f "directories.txt" ] || find . -name "tape*.snar" | grep -q .; then
@@ -61,6 +63,7 @@ if [ -f "directories.txt" ] && find . -name "tape*.snar" | grep -q .; then
     echo "Retrieved directories content: ${DIRECTORIES}"
     TAPE_NUMBER=$(find . -name "tape*.snar" | sed 's|\./tape||' | sed 's|.snar||')
     echo "Retrieved tape number: ${TAPE_NUMBER}"
+    chown abc:abc directories.txt "tape${TAPE_NUMBER}.snar"
 else
     echo "Can't find the index files, quitting"
     exit 0
@@ -73,6 +76,8 @@ echo "Writing index files to tape:"
 tar -cvf /dev/nst0 "tape${TAPE_NUMBER}.snar" directories.txt
 # delete local index files
 rm "tape${TAPE_NUMBER}.snar" directories.txt
+# ***** End of Script
+
 
 # In order to restore, one can use the following commands to extract all the tarballs in sequence:
 # docker exec -it tape bash
