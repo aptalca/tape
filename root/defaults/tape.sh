@@ -70,7 +70,7 @@ fn_backup () {
     # check for active tape by seeking to end of data and checking the files at the last file
     mt -f /dev/nst0 eod || ( echo "Can't seek to eod, quitting" && exit 0 )
     mt -f /dev/nst0 bsfm 2 || ( echo "Can't read the last written file from tape, quitting" && exit 0 )
-    if tar tvf /dev/nst0 | grep -q "directories*.txt"; then
+    if tar tvf /dev/nst0 | grep -q "directories.*.txt"; then
         echo "Found the directories list, will read snapshot file and directories from tape"
     else
         echo "Can't find the directories list, quitting"
