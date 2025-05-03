@@ -26,7 +26,7 @@ echo $(date)
 #    Now you should have a tape initialized with `file 0` containing the tarball of your source directories
 #    and `file 1` containing the tar snapshot and the directories.txt file. When the following script is
 #    run, it will first retrieve these index files, use them to generate a new incremental tar and write
-#    the pair to tape. 
+#    the pair to tape.
 
 # How to do a backup:
 # 1. Run this script manually or via cron with no arguments
@@ -68,7 +68,11 @@ fn_backup () {
         exit 0
     fi
     # check for active tape by seeking to end of data and checking the files at the last file
+    echo "Seeking to end of tape"
     mt -f /dev/nst0 eod || ( echo "Can't seek to eod, quitting" && exit 0 )
+    echo "Current tape status:"
+    mt -f /dev/nst0 status
+    echo "Seeking to beginning of last file on tape"
     mt -f /dev/nst0 bsfm 2 || ( echo "Can't read the last written file from tape, quitting" && exit 0 )
     if tar tvf /dev/nst0 | grep -q "directories.*.txt"; then
         echo "Found the directories list, will read snapshot file and directories from tape"
@@ -97,6 +101,9 @@ fn_backup () {
     tar -cvf /dev/nst0 "tape${TAPE_NUMBER}.snar" "directories${TAPE_NUMBER}.txt"
     # delete local index files
     rm "tape${TAPE_NUMBER}.snar" "directories${TAPE_NUMBER}.txt"
+    echo "Incremental tar and index files were successfully written to tape ${TAPE_NUMBER}"
+    echo "Current tape status:"
+    mt -f /dev/nst0 status
 }
 
 fn_restore () {
