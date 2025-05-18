@@ -2,6 +2,8 @@ FROM ghcr.io/linuxserver/baseimage-alpine:3.21
 
 LABEL maintainer="aptalca"
 
+ENV ATTACHED_DEVICES_PERMS="/ -regex \/dev\/.*st[0-9]"
+
 RUN \
   echo "**** install runtime packages ****" && \
   apk add --no-cache --upgrade \
